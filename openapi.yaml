@@ -1,0 +1,429 @@
+openapi: 3.1.0
+info:
+  title: LetheCrypt API
+  description: API Spec for LetheCrypt, a password manager.
+  version: 0.0.0
+servers: []
+paths:
+  /pass:
+    get:
+      summary: List passwordfile
+      operationId: listPasswordFiles
+      description: Returns a list of PasswordFile records.
+      tags:
+        - passcrud
+      security:
+        - BearerJwt: []
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PasswordFile"
+                title: ListPasswordFilesOk
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    post:
+      summary: Create passwordfile
+      operationId: createPasswordFile
+      description: Creates a new record of type PasswordFile.
+      tags:
+        - passcrud
+      security:
+        - BearerJwt: []
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                title: CreatePasswordFileCreated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      requestBody:
+        required: true
+        description: Should contain name, which is a unique identifier to refer to the
+          password, and content which can be any string
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordFileCreate"
+  /signup:
+    post:
+      operationId: registerUser
+      tags:
+        - auth
+      summary: Register user
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                required: []
+                title: LoginPageForNewUserCreated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      requestBody:
+        required: true
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      parameters: []
+  /login:
+    post:
+      operationId: loginUser
+      tags:
+        - auth
+      summary: Login user
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                required: []
+                title: LoginPageForExistingUserOk
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      requestBody:
+        required: true
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      parameters: []
+  /isauthenticated:
+    get:
+      operationId: isUserAuthenticated
+      tags:
+        - auth
+      summary: Is user authenticated
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: boolean
+                title: IsUserAuthenticatedOk
+      parameters: []
+      description: Gives boolean literal true or false depending on if a valid
+        httpOnly JWT cookie is found
+  /logout:
+    get:
+      operationId: logsUserOut
+      tags:
+        - auth
+      summary: Logs user out
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                title: LogsUserOutOk
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - BearerJwt: []
+  /pass/{id}:
+    get:
+      summary: Get passwordfile
+      operationId: getPasswordfile
+      description: Returns a record of type PasswordFile.
+      tags:
+        - passcrud
+      security:
+        - BearerJwt: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasswordFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    patch:
+      summary: Patch passwordfile
+      operationId: patchPasswordfile
+      description: Partially updates a record of type PasswordFile.
+      tags:
+        - passcrud
+      security:
+        - BearerJwt: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: "null"
+                title: PartialUpdatePasswordFileOk
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      requestBody:
+        required: true
+        description: Should have the new content in an object, which will override the
+          previously saved content.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordFilePartialUpdate"
+    delete:
+      summary: Delete passwordfile
+      operationId: deletePasswordfile
+      description: Deletes a record of type PasswordFile.
+      tags:
+        - passcrud
+      security:
+        - BearerJwt: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204":
+          description: The request was successful, but there is no content to return in
+            the response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                title: RemovePasswordFileNoContent
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /copy/{id}:
+    post:
+      operationId: sharePassword
+      tags:
+        - sharing
+      summary: Share password
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: "null"
+                title: SharePasswordCreated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      requestBody:
+        required: true
+        description: ""
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receiver:
+                  type: string
+              required:
+                - receiver
+components:
+  schemas:
+    PasswordFile:
+      type: object
+      properties:
+        author:
+          type: string
+        content:
+          type: string
+        createdTimestamp:
+          type: string
+        name:
+          type: string
+        passwordID:
+          type: number
+      required:
+        - content
+        - createdTimestamp
+        - author
+        - name
+        - passwordID
+      description: Represents a password file on the server
+    PasswordFileCreate:
+      type: object
+      properties:
+        content:
+          type: string
+        name:
+          type: string
+      required:
+        - content
+        - name
+      description: Data transfer object for creating a new PasswordFile.
+      x-fiddle-dto-info:
+        baseSchemaName: PasswordFile
+    PasswordFilePartialUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+        name:
+          type: string
+      required: []
+      description: Data transfer object for partially updating an existing
+        PasswordFile (PATCH operation).
+      x-fiddle-dto-info:
+        baseSchemaName: PasswordFile
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+      description: User credentials, consisting of a username and password.
+  responses:
+    BadRequest:
+      description: The server could not understand the request due to invalid syntax.
+        The client should modify the request and try again.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+    NotFound:
+      description: The server cannot find the requested resource. The endpoint may be
+        invalid or the resource may no longer exist.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+    Conflict:
+      description: The request could not be completed due to a conflict with the
+        current state of the resource. Happens due to trying non-unique values
+        on fields like username or name
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+    InternalServerErrror:
+      description: The server encountered an unexpected condition that prevented it
+        from fulfilling the request. Report the issue to the support team if it
+        persists.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+    Unauthorized:
+      description: Authentication is required to access the requested resource. The
+        client must include the appropriate credentials.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
+  parameters:
+    id:
+      name: id
+      in: path
+      description: ""
+      schema:
+        type: number
+      explode: false
+      style: simple
+      required: true
+  securitySchemes:
+    BearerJwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: Json Web Token (JWT)
+      description: "Jwt Auth: Authenticated requests contain a valid Json Web Token
+        (JWT) as part of the `Authorization: Bearer <JWT>` header."
+tags:
+  - name: auth
+  - name: passcrud
+    description: ""
+  - name: sharing
