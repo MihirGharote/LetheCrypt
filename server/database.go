@@ -1,6 +1,8 @@
 package server
 
 import (
+	"log"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -13,7 +15,7 @@ func InitializeDatabase() {
 	db, err = gorm.Open(sqlite.Open(DatabasePath), &gorm.Config{})
 
 	if err != nil {
-		panic("Database connection failed")
+		log.Panicf("Database connection failed: %v", err)
 	}
 
 	db.AutoMigrate(&User{}, &PasswordFile{})

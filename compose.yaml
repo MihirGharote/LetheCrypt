@@ -6,6 +6,6 @@ services:
     environment:
       - LETHECRYPT_JWT=3b52eb56f26414d2205e9327054861e8c9f381e584ae3166032d2c4dc1363928
       - LETHECRYPT_AES=c1d20e9af6e8770a142987f062981f87
-      - LETHECRYPT_DB_PATH="/data/lethecrypt.db"
+      - LETHECRYPT_DB_PATH=/data/lethecrypt.db
     volumes:
       - ./data:/data
